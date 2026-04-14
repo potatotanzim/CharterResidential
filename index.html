@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charter Residential | Management & Modular Living</title>
+    <meta name="description" content="Increase rental profit with performance-based management and net-zero modular housing in the GTA.">
+    
+    <!-- Typography: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Alpine.js for Interactivity -->
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        deepBlue: '#0f172a', // Slate 900 - Primary high-contrast text/headers
+                        textBody: '#475569', // Slate 600 - Body copy
+                        accent: {
+                            DEFAULT: '#059669', // Emerald 600 - Professional, represents wealth/growth & green modular
+                            hover: '#047857',   // Emerald 700
+                            light: '#ecfdf5',   // Emerald 50
+                        },
+                        surface: {
+                            white: '#ffffff',
+                            gray: '#f8fafc', // Very light gray for subtle section breaks
+                            border: '#e2e8f0', // Light borders
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'hover': '0 10px 25px -5px rgba(5, 150, 105, 0.15)', // Emerald shadow
+                    },
+                    animation: {
+                        'marquee': 'marquee 40s linear infinite',
+                    },
+                    keyframes: {
+                        marquee: {
+                            '0%': { transform: 'translateX(0%)' },
+                            '100%': { transform: 'translateX(-50%)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        [x-cloak] { display: none !important; }
+        body { background-color: #f8fafc; }
+        
+        .white-aesthetic-overlay {
+            background: linear-gradient(to right, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 100%);
+        }
+
+        .pill-button {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .pill-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .step-circle {
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: #059669;
+            color: white;
+            font-weight: bold;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3);
+        }
+
+        /* PDF Embed Container styling */
+        .pdf-container {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 75%; /* Aspect ratio for landscape deck */
+            overflow: hidden;
+            border-radius: 12px;
+        }
+        .pdf-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .pause-animation:hover {
+            animation-play-state: paused;
+        }
+
+        .fade-edges {
+            mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+            -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+        }
+    </style>
+</head>
+<body class="font-sans text-textBody antialiased" x-data="{ currentView: 'home', mobileMenu: false, servicesDropdown: false }">
+
+    <!-- 1. Global Navigation (White Aesthetic) -->
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-surface-border shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" @click="currentView = 'home'; window.scrollTo(0,0);">
+                <div class="bg-deepBlue p-2 rounded-lg">
+                    <i data-lucide="home" class="text-white w-6 h-6"></i>
+                </div>
+                <span class="text-xl font-bold tracking-tight text-deepBlue">CHARTER <span class="font-light text-textBody">RESIDENTIAL</span></span>
+            </div>
+
+            <!-- Navigation Links -->
+            <div class="hidden lg:flex items-center space-x-8 text-sm font-semibold text-deepBlue">
+                <a href="#" @click.prevent="currentView = 'home'; window.scrollTo(0,0);" class="hover:text-accent transition-colors" :class="currentView === 'home' ? 'text-accent' : ''">Home</a>
+                <a href="#" class="hover:text-accent transition-colors">About Us</a>
+                
+                <!-- Services Dropdown -->
+                <div class="relative" @mouseenter="servicesDropdown = true" @mouseleave="servicesDropdown = false">
+                    <button class="flex items-center space-x-1 hover:text-accent transition-colors focus:outline-none" :class="(currentView === 'property-management' || currentView === 'modular-living') ? 'text-accent' : ''">
+                        <span>Services</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                    </button>
+                    <div x-show="servicesDropdown" 
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 translate-y-2"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         class="absolute left-0 mt-2 w-64 bg-white rounded-xl shadow-xl py-3 z-50 border border-surface-border">
+                        <a href="#" @click.prevent="currentView = 'property-management'; window.scrollTo(0,0); servicesDropdown = false;" class="block px-6 py-3 hover:bg-surface-gray hover:text-accent transition-colors font-semibold border-b border-surface-border/50">Property Management</a>
+                        <a href="#" @click.prevent="currentView = 'modular-living'; window.scrollTo(0,0); servicesDropdown = false;" class="block px-6 py-3 hover:bg-surface-gray hover:text-accent transition-colors font-semibold">Modular Living</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA Phone Button -->
+            <div class="hidden md:block">
+                <a href="tel:+14379742863" class="pill-button bg-accent hover:bg-accent-hover text-white px-8 py-3 rounded-full text-sm font-bold transition-all flex items-center space-x-2 shadow-hover">
+                    <i data-lucide="phone" class="w-4 h-4"></i>
+                    <span>+1 437-974-2863</span>
+                </a>
+            </div>
+
+            <!-- Mobile Menu Toggle -->
+            <button class="lg:hidden p-2 text-deepBlue" @click="mobileMenu = !mobileMenu">
+                <i data-lucide="menu" x-show="!mobileMenu"></i>
+                <i data-lucide="x" x-show="mobileMenu" x-cloak></i>
+            </button>
+        </nav>
+
+        <!-- Mobile Navigation Menu -->
+        <div x-show="mobileMenu" x-cloak class="lg:hidden bg-white border-t border-surface-border px-6 py-8 space-y-6 text-deepBlue absolute w-full shadow-xl" @click.away="mobileMenu = false">
+            <a href="#" @click.prevent="currentView = 'home'; window.scrollTo(0,0); mobileMenu = false;" class="block text-lg font-semibold">Home</a>
+            <div class="space-y-4 pl-4 border-l-2 border-accent/20">
+                <div class="text-textBody text-sm font-bold uppercase tracking-wider">Services</div>
+                <a href="#" @click.prevent="currentView = 'property-management'; window.scrollTo(0,0); mobileMenu = false;" class="block font-medium hover:text-accent">Property Management</a>
+                <a href="#" @click.prevent="currentView = 'modular-living'; window.scrollTo(0,0); mobileMenu = false;" class="block font-medium hover:text-accent">Modular Living</a>
+            </div>
+            <a href="#" class="block text-lg font-semibold">About Us</a>
+            <a href="tel:+14379742863" class="inline-flex justify-center bg-accent text-white px-6 py-4 rounded-full font-bold w-full text-center shadow-md">Call: +1 437-974-2863</a>
+        </div>
+    </header>
+
+    <!-- 2. Global Gateway Hero (Home View) -->
+    <section class="relative min-h-[90vh] flex items-center overflow-hidden bg-white" x-show="currentView === 'home'" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+        <!-- Bright, Airy Architectural Background -->
+        <div class="absolute inset-0">
+            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" 
+                 alt="Bright Modern Minimalist Home Interior" 
+                 class="w-full h-full object-cover">
+            <div class="absolute inset-0 white-aesthetic-overlay"></div>
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10 text-center">
+            <div class="max-w-4xl mx-auto">
+                <span class="inline-block py-1 px-3 rounded-full bg-deepBlue/5 text-deepBlue font-bold text-sm tracking-widest uppercase mb-6 border border-deepBlue/10">Modern Management & Modular Living</span>
+                <h1 class="text-5xl md:text-7xl font-bold mb-8 text-deepBlue leading-tight tracking-tight">
+                    Unlock Your Property's <br/><span class="text-accent">Full Potential.</span>
+                </h1>
+                <p class="text-xl md:text-2xl text-textBody mb-14 max-w-3xl mx-auto font-light leading-relaxed">
+                    Grow your rental income with our expert property management, or build a modern modular home to add value to your property. Choose the path that works best for you.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
+                    <a href="#" @click.prevent="currentView = 'property-management'; window.scrollTo(0,0);" class="pill-button w-full sm:w-auto bg-deepBlue text-white hover:bg-deepBlue/90 px-10 py-5 rounded-full font-bold text-lg flex items-center justify-center space-x-3 shadow-xl">
+                        <i data-lucide="bar-chart-2" class="w-6 h-6 text-accent"></i>
+                        <span>Property Management</span>
+                    </a>
+                    <a href="#" @click.prevent="currentView = 'modular-living'; window.scrollTo(0,0);" class="pill-button w-full sm:w-auto bg-white border-2 border-surface-border text-deepBlue hover:border-accent hover:text-accent px-10 py-5 rounded-full font-bold text-lg flex items-center justify-center space-x-3 shadow-soft">
+                        <i data-lucide="home" class="w-6 h-6"></i>
+                        <span>Modular Living</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         VIEW: PROPERTY MANAGEMENT
+         ========================================== -->
+    <div x-show="currentView === 'property-management'" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
+        
+        <!-- PM Hero Section -->
+        <section class="pt-24 pb-16 bg-white border-b border-surface-border">
+            <div class="container mx-auto px-6 text-center max-w-4xl">
+                <h1 class="text-4xl md:text-6xl font-bold text-deepBlue mb-6 leading-tight tracking-tight">Increase Rental Profit <br/>Per Property.</h1>
+                <p class="text-xl md:text-2xl text-textBody mb-8 font-light">Performance-Based Room Optimization & Tenant Management in the GTA.</p>
+                <div class="flex flex-col items-center">
+                    <div class="inline-flex items-center space-x-3 bg-accent-light text-accent px-6 py-3 rounded-full font-bold text-lg border border-accent/20">
+                        <i data-lucide="check-circle" class="w-6 h-6"></i>
+                        <span>One-time placement fee. $0 monthly management fee.*</span>
+                    </div>
+                    <span class="text-xs text-textBody mt-2 opacity-75">*Conditions apply</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- NEW SECTION: The Charter Goal & Why Choose Us -->
+        <section class="py-24 bg-surface-gray border-b border-surface-border">
+            <div class="container mx-auto px-6">
+                <div class="max-w-4xl mx-auto text-center mb-16">
+                    <span class="text-accent font-bold tracking-widest uppercase text-sm mb-2 block">Our Mission</span>
+                    <h2 class="text-3xl md:text-5xl font-bold text-deepBlue mb-6">The Goal of Charter Residential</h2>
+                    <p class="text-lg text-textBody leading-relaxed">
+                        We exist to help landlords earn more from the exact same property. Traditional property management takes a fixed cut whether your property performs well or not. We operate on a <strong>Performance-Based Model</strong>—meaning our success is mathematically tied to your success.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Reason 1 -->
+                    <div class="bg-white p-8 rounded-2xl shadow-soft border border-surface-border hover:-translate-y-1 transition-transform duration-300">
+                        <div class="bg-accent-light w-14 h-14 rounded-xl flex items-center justify-center mb-6">
+                            <i data-lucide="target" class="w-7 h-7 text-accent"></i>
+                        </div>
+                        <h4 class="font-bold text-deepBlue text-xl mb-3">100% Aligned Incentives</h4>
+                        <p class="text-textBody text-sm leading-relaxed">We earn our premium strictly on the rent recovered above your agreed base. If you don't profit, we don't profit.</p>
+                    </div>
+                    <!-- Reason 2 -->
+                    <div class="bg-white p-8 rounded-2xl shadow-soft border border-surface-border hover:-translate-y-1 transition-transform duration-300">
+                        <div class="bg-accent-light w-14 h-14 rounded-xl flex items-center justify-center mb-6">
+                            <i data-lucide="shield-check" class="w-7 h-7 text-accent"></i>
+                        </div>
+                        <h4 class="font-bold text-deepBlue text-xl mb-3">You Keep Control</h4>
+                        <p class="text-textBody text-sm leading-relaxed">You maintain full ownership and final say over structural changes. You hold the asset, we operate the system.</p>
+                    </div>
+                    <!-- Reason 3 -->
+                    <div class="bg-white p-8 rounded-2xl shadow-soft border border-surface-border hover:-translate-y-1 transition-transform duration-300">
+                        <div class="bg-accent-light w-14 h-14 rounded-xl flex items-center justify-center mb-6">
+                            <i data-lucide="clock" class="w-7 h-7 text-accent"></i>
+                        </div>
+                        <h4 class="font-bold text-deepBlue text-xl mb-3">Reclaim Your Time</h4>
+                        <p class="text-textBody text-sm leading-relaxed">We handle multi-channel marketing, 24/7 tenant communications, and minor repairs. Your real estate truly becomes passive.</p>
+                    </div>
+                    <!-- Reason 4 -->
+                    <div class="bg-white p-8 rounded-2xl shadow-soft border border-surface-border hover:-translate-y-1 transition-transform duration-300">
+                        <div class="bg-accent-light w-14 h-14 rounded-xl flex items-center justify-center mb-6">
+                            <i data-lucide="headphones" class="w-7 h-7 text-accent"></i>
+                        </div>
+                        <h4 class="font-bold text-deepBlue text-xl mb-3">Dedicated Support</h4>
+                        <p class="text-textBody text-sm leading-relaxed">We act as the single point of contact, providing seamless customer service for both tenants and landlords to ensure a frictionless experience.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scope of Service & Upgrade -->
+        <section class="py-24 bg-white border-t border-surface-border">
+            <div class="container mx-auto px-6">
+                
+                <h2 class="text-3xl md:text-4xl font-bold text-deepBlue mb-16 text-center">Clear Division of Responsibility</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <!-- Included -->
+                    <div class="bg-surface-gray p-10 rounded-2xl shadow-soft border border-surface-border">
+                        <h3 class="flex items-center text-2xl font-bold text-deepBlue mb-8">
+                            <div class="bg-accent text-white p-2 rounded-lg mr-4">
+                                <i data-lucide="check" class="w-6 h-6"></i>
+                            </div>
+                            Included (Charter Covers)
+                        </h3>
+                        <ul class="space-y-5">
+                            <li class="flex items-start space-x-3 text-textBody">
+                                <i data-lucide="check" class="w-5 h-5 text-accent mt-0.5 shrink-0"></i>
+                                <span>Multi-channel property marketing</span>
+                            </li>
+                            <li class="flex items-start space-x-3 text-textBody">
+                                <i data-lucide="check" class="w-5 h-5 text-accent mt-0.5 shrink-0"></i>
+                                <span>Professional tenant screening & placement</span>
+                            </li>
+                            <li class="flex items-start space-x-3 text-textBody">
+                                <i data-lucide="check" class="w-5 h-5 text-accent mt-0.5 shrink-0"></i>
+                                <span>Seamless lease onboarding</span>
+                            </li>
+                            <li class="flex items-start space-x-3 text-textBody">
+                                <i data-lucide="check" class="w-5 h-5 text-accent mt-0.5 shrink-0"></i>
+                                <span>Automated rent tracking & collection</span>
+                            </li>
+                            <li class="flex items-start space-x-3 text-textBody">
+                                <i data-lucide="check" class="w-5 h-5 text-accent mt-0.5 shrink-0"></i>
+                                <span>24/7 direct tenant communication</span>
+                            </li>
+                            <li class="flex items-start space-x-3 text-textBody">
+                                <i data-lucide="check" class="w-5 h-5 text-accent mt-0.5 shrink-0"></i>
+                                <span>Minor repairs (plumbing/electrical up to $150/mo)</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Owner Resp -->
+                    <div class="bg-surface-gray p-10 rounded-2xl shadow-soft border border-surface-border">
+                        <h3 class="flex items-center text-2xl font-bold text-deepBlue mb-8">
+                            <div class="bg-white text-deepBlue p-2 rounded-lg mr-4 border border-surface-border shadow-sm">
+                                <i data-lucide="home" class="w-6 h-6"></i>
+                            </div>
+                            Owner Responsibility
+                        </h3>
+                        <ul class="space-y-5">
+                            <li class="flex items-start space-x-3 text-textBody">
+                                <i data-lucide="arrow-right" class="w-5 h-5 text-deepBlue mt-0.5 shrink-0"></i>
+                                <span>Utilities payment</span>
+                            </li>
+                            <li class="flex items-start space-x-3 text-textBody">
+                                <i data-lucide="arrow-right" class="w-5 h-5 text-deepBlue mt-0.5 shrink-0"></i>
+                                <span>Major repairs (above $150 threshold)</span>
+                            </li>
+                            <li class="flex items-start space-x-3 text-textBody">
+                                <i data-lucide="arrow-right" class="w-5 h-5 text-deepBlue mt-0.5 shrink-0"></i>
+                                <span>Structural work & municipal permits</span>
+                            </li>
+                            <li class="flex items-start space-x-3 text-textBody">
+                                <i data-lucide="arrow-right" class="w-5 h-5 text-deepBlue mt-0.5 shrink-0"></i>
+                                <span>Property taxes</span>
+                            </li>
+                            <li class="flex items-start space-x-3 text-textBody">
+                                <i data-lucide="arrow-right" class="w-5 h-5 text-deepBlue mt-0.5 shrink-0"></i>
+                                <span>Mortgage payments</span>
+                            </li>
+                            <li class="flex items-start space-x-3 text-textBody">
+                                <i data-lucide="arrow-right" class="w-5 h-5 text-deepBlue mt-0.5 shrink-0"></i>
+                                <span>Homeowner's insurance</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- NEW SECTION: Landlord Reviews / Success Stories -->
+        <section class="py-24 bg-surface-gray border-t border-surface-border">
+            <div class="container mx-auto px-6">
+                <div class="max-w-4xl mx-auto text-center mb-16">
+                    <span class="text-accent font-bold tracking-widest uppercase text-sm mb-2 block">Landlord Success Stories</span>
+                    <h2 class="text-3xl md:text-5xl font-bold text-deepBlue mb-6">Hear from our partners.</h2>
+                    <p class="text-lg text-textBody leading-relaxed">
+                        See how our performance-based model and room optimization strategies are helping GTA property owners reclaim their time and maximize profits.
+                    </p>
+                </div>
+
+                <!-- Scrolling Marquee Container -->
+                <div class="relative w-full overflow-hidden fade-edges py-4">
+                    <div class="flex w-max animate-marquee pause-animation">
+                        
+                        <!-- Original Group -->
+                        <div class="flex gap-8 pr-8">
+                            <!-- Review 1 -->
+                            <div class="bg-white p-8 rounded-2xl shadow-soft border border-surface-border flex flex-col w-[350px] md:w-[450px] shrink-0">
+                                <div class="flex text-yellow-400 mb-4 space-x-1">
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                </div>
+                                <p class="text-textBody text-sm leading-relaxed mb-6 italic flex-grow">
+                                    "I was skeptical about the '$0 monthly fee' at first, but Charter proved their model works. They proposed converting my large basement living area into an extra room, placed reliable tenants, and my net income jumped noticeably. I only pay them their premium from the surplus rent above my base. Truly a win-win."
+                                </p>
+                                <div class="flex items-center space-x-4 border-t border-surface-border pt-4">
+                                    <div class="bg-accent-light w-10 h-10 rounded-full flex items-center justify-center text-accent font-bold">MT</div>
+                                    <div>
+                                        <p class="font-bold text-deepBlue text-sm">Michael T.</p>
+                                        <p class="text-xs text-textBody">Landlord, Mississauga</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Review 2 -->
+                            <div class="bg-white p-8 rounded-2xl shadow-soft border border-surface-border flex flex-col w-[350px] md:w-[450px] shrink-0">
+                                <div class="flex text-yellow-400 mb-4 space-x-1">
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                </div>
+                                <p class="text-textBody text-sm leading-relaxed mb-6 italic flex-grow">
+                                    "Managing room-by-room rentals used to be a nightmare of group chats, utility splits, and minor repair calls. Charter took over absolutely everything. Their tenant screening is rigorous, and they handle all the day-to-day communications. My real estate is finally the passive investment I wanted it to be."
+                                </p>
+                                <div class="flex items-center space-x-4 border-t border-surface-border pt-4">
+                                    <div class="bg-accent-light w-10 h-10 rounded-full flex items-center justify-center text-accent font-bold">SJ</div>
+                                    <div>
+                                        <p class="font-bold text-deepBlue text-sm">Sarah J.</p>
+                                        <p class="text-xs text-textBody">Multi-Property Owner, Toronto</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Review 3 -->
+                            <div class="bg-white p-8 rounded-2xl shadow-soft border border-surface-border flex flex-col w-[350px] md:w-[450px] shrink-0">
+                                <div class="flex text-yellow-400 mb-4 space-x-1">
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                </div>
+                                <p class="text-textBody text-sm leading-relaxed mb-6 italic flex-grow">
+                                    "What I love most is the transparency. I get my base rent guaranteed per occupied room, and they only make money when the property performs well. They handle the leasing and the small sub-$150 repairs, but I still have complete ownership and final say over my asset. It's a fantastic partnership."
+                                </p>
+                                <div class="flex items-center space-x-4 border-t border-surface-border pt-4">
+                                    <div class="bg-accent-light w-10 h-10 rounded-full flex items-center justify-center text-accent font-bold">DR</div>
+                                    <div>
+                                        <p class="font-bold text-deepBlue text-sm">David R.</p>
+                                        <p class="text-xs text-textBody">Landlord, Etobicoke</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Review 4 (New) -->
+                            <div class="bg-white p-8 rounded-2xl shadow-soft border border-surface-border flex flex-col w-[350px] md:w-[450px] shrink-0">
+                                <div class="flex text-yellow-400 mb-4 space-x-1">
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                </div>
+                                <p class="text-textBody text-sm leading-relaxed mb-6 italic flex-grow">
+                                    "I've worked with standard property managers before, and they always felt like a cost center. Charter feels like a true growth partner. They optimized our floor plan, handled the tenant placement, and now my portfolio yields substantially more. The fact that they handle all tenant calls is just the cherry on top."
+                                </p>
+                                <div class="flex items-center space-x-4 border-t border-surface-border pt-4">
+                                    <div class="bg-accent-light w-10 h-10 rounded-full flex items-center justify-center text-accent font-bold">EC</div>
+                                    <div>
+                                        <p class="font-bold text-deepBlue text-sm">Emily C.</p>
+                                        <p class="text-xs text-textBody">Real Estate Investor, Vaughan</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cloned Group (For Seamless Scrolling) -->
+                        <div class="flex gap-8 pr-8" aria-hidden="true">
+                            <!-- Review 1 (Clone) -->
+                            <div class="bg-white p-8 rounded-2xl shadow-soft border border-surface-border flex flex-col w-[350px] md:w-[450px] shrink-0">
+                                <div class="flex text-yellow-400 mb-4 space-x-1">
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                </div>
+                                <p class="text-textBody text-sm leading-relaxed mb-6 italic flex-grow">
+                                    "I was skeptical about the '$0 monthly fee' at first, but Charter proved their model works. They proposed converting my large basement living area into an extra room, placed reliable tenants, and my net income jumped noticeably. I only pay them their premium from the surplus rent above my base. Truly a win-win."
+                                </p>
+                                <div class="flex items-center space-x-4 border-t border-surface-border pt-4">
+                                    <div class="bg-accent-light w-10 h-10 rounded-full flex items-center justify-center text-accent font-bold">MT</div>
+                                    <div>
+                                        <p class="font-bold text-deepBlue text-sm">Michael T.</p>
+                                        <p class="text-xs text-textBody">Landlord, Mississauga</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Review 2 (Clone) -->
+                            <div class="bg-white p-8 rounded-2xl shadow-soft border border-surface-border flex flex-col w-[350px] md:w-[450px] shrink-0">
+                                <div class="flex text-yellow-400 mb-4 space-x-1">
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                </div>
+                                <p class="text-textBody text-sm leading-relaxed mb-6 italic flex-grow">
+                                    "Managing room-by-room rentals used to be a nightmare of group chats, utility splits, and minor repair calls. Charter took over absolutely everything. Their tenant screening is rigorous, and they handle all the day-to-day communications. My real estate is finally the passive investment I wanted it to be."
+                                </p>
+                                <div class="flex items-center space-x-4 border-t border-surface-border pt-4">
+                                    <div class="bg-accent-light w-10 h-10 rounded-full flex items-center justify-center text-accent font-bold">SJ</div>
+                                    <div>
+                                        <p class="font-bold text-deepBlue text-sm">Sarah J.</p>
+                                        <p class="text-xs text-textBody">Multi-Property Owner, Toronto</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Review 3 (Clone) -->
+                            <div class="bg-white p-8 rounded-2xl shadow-soft border border-surface-border flex flex-col w-[350px] md:w-[450px] shrink-0">
+                                <div class="flex text-yellow-400 mb-4 space-x-1">
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                </div>
+                                <p class="text-textBody text-sm leading-relaxed mb-6 italic flex-grow">
+                                    "What I love most is the transparency. I get my base rent guaranteed per occupied room, and they only make money when the property performs well. They handle the leasing and the small sub-$150 repairs, but I still have complete ownership and final say over my asset. It's a fantastic partnership."
+                                </p>
+                                <div class="flex items-center space-x-4 border-t border-surface-border pt-4">
+                                    <div class="bg-accent-light w-10 h-10 rounded-full flex items-center justify-center text-accent font-bold">DR</div>
+                                    <div>
+                                        <p class="font-bold text-deepBlue text-sm">David R.</p>
+                                        <p class="text-xs text-textBody">Landlord, Etobicoke</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Review 4 (Clone) -->
+                            <div class="bg-white p-8 rounded-2xl shadow-soft border border-surface-border flex flex-col w-[350px] md:w-[450px] shrink-0">
+                                <div class="flex text-yellow-400 mb-4 space-x-1">
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                    <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+                                </div>
+                                <p class="text-textBody text-sm leading-relaxed mb-6 italic flex-grow">
+                                    "I've worked with standard property managers before, and they always felt like a cost center. Charter feels like a true growth partner. They optimized our floor plan, handled the tenant placement, and now my portfolio yields substantially more. The fact that they handle all tenant calls is just the cherry on top."
+                                </p>
+                                <div class="flex items-center space-x-4 border-t border-surface-border pt-4">
+                                    <div class="bg-accent-light w-10 h-10 rounded-full flex items-center justify-center text-accent font-bold">EC</div>
+                                    <div>
+                                        <p class="font-bold text-deepBlue text-sm">Emily C.</p>
+                                        <p class="text-xs text-textBody">Real Estate Investor, Vaughan</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- NEW SECTION: PDF Presentation Embed -->
+        <section class="py-24 bg-deepBlue text-white border-t border-deepBlue shadow-inner">
+            <div class="container mx-auto px-6">
+                <div class="text-center max-w-3xl mx-auto mb-12">
+                    <h2 class="text-3xl md:text-5xl font-bold mb-6">Review Our Complete Strategy</h2>
+                    <p class="text-lg text-white/80 font-light">
+                        Flip through our official property management deck below to see exactly how our performance-based model is structured to maximize your ROI.
+                    </p>
+                </div>
+                
+                <!-- PDF Viewer Shell -->
+                <div class="max-w-5xl mx-auto bg-surface-gray p-2 md:p-4 rounded-2xl shadow-2xl border border-white/10">
+                    <div class="pdf-container bg-white rounded-xl">
+                        <!-- Standard Iframe Embed for PDFs -->
+                        <iframe src="https://drive.google.com/file/d/1MgT7LiruIZ-wBckeOBAQ5CUbbT5MDBth/preview" title="Charter Residential Property Management Deck" aria-label="Company Presentation PDF" allow="autoplay"></iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div> <!-- End PM View -->
+
+
+    <!-- ==========================================
+         VIEW: MODULAR LIVING
+         ========================================== -->
+    <div x-show="currentView === 'modular-living'" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
+        
+        <!-- Hero Section -->
+        <section class="relative pt-32 pb-24 bg-white border-b border-surface-border overflow-hidden">
+            <div class="absolute inset-0 z-0">
+                <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="Modern Modular Home" class="w-full h-full object-cover opacity-20">
+                <div class="absolute inset-0 bg-gradient-to-b from-white/90 via-white/95 to-white"></div>
+            </div>
+            <div class="container mx-auto px-6 text-center max-w-5xl relative z-10">
+                <span class="text-accent font-bold tracking-widest uppercase text-sm mb-4 block">Your Trusted Partner in Secondary Suite Design & Construction</span>
+                <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold text-deepBlue mb-6 leading-tight tracking-tight">Explore Our Modular <br/><span class="text-accent">Garden Suite & Laneway Homes</span></h1>
+                <p class="text-xl md:text-2xl text-textBody mb-10 font-light max-w-3xl mx-auto">Build Your Backyard Home with Our Modular System From <strong class="text-deepBlue font-bold">$185/sq.ft</strong></p>
+                
+                <div class="flex justify-center">
+                    <a href="#" @click.prevent="window.scrollTo(0, document.body.scrollHeight);" class="pill-button inline-flex items-center space-x-3 bg-deepBlue hover:bg-deepBlue/90 text-white px-10 py-4 rounded-full font-bold text-lg shadow-xl">
+                        <span>Get a Free Consultation</span>
+                        <i data-lucide="arrow-down" class="w-5 h-5"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Us & Core Intro -->
+        <section class="py-24 bg-surface-gray">
+            <div class="container mx-auto px-6">
+                <div class="flex flex-col lg:flex-row items-center gap-16">
+                    <div class="lg:w-1/2">
+                        <span class="text-accent font-bold tracking-widest uppercase text-sm mb-2 block">About Us</span>
+                        <h2 class="text-3xl md:text-5xl font-bold text-deepBlue mb-6">Redefining Modern Construction in the GTA.</h2>
+                        <p class="text-lg text-textBody mb-6 leading-relaxed">
+                            Charter Residential is a top builder of modern garden and modular suites in the Greater Toronto Area (GTA). We handle the entire process for you—from the first design and city permits all the way to the final build. Our goal is to help you get the most out of your property, whether you want more living space for your family or a new way to earn passive rental income.
+                        </p>
+                        <p class="text-lg text-textBody leading-relaxed">
+                            We are excited to share our new line of eco-friendly, net-zero modular homes. They are carefully designed to fit perfectly in backyards of all shapes and sizes. We are dedicated to building sustainable, beautiful, and highly useful spaces that add real, long-term value to your home.
+                        </p>
+                    </div>
+                    <div class="lg:w-1/2">
+                        <img src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Beautiful Garden Suite Design" class="rounded-3xl shadow-2xl border-4 border-white">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- The 4 Core Product Lines -->
+        <section class="py-24 bg-white border-t border-surface-border">
+            <div class="container mx-auto px-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    
+                    <!-- Garden Suite -->
+                    <div class="bg-surface-gray rounded-3xl overflow-hidden shadow-soft border border-surface-border group hover:-translate-y-2 transition-transform duration-300">
+                        <div class="h-64 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Garden Suite" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                            <div class="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full text-sm font-bold text-deepBlue shadow-sm">Garden Suite</div>
+                        </div>
+                        <div class="p-8">
+                            <h3 class="text-2xl font-bold text-deepBlue mb-4">Backyard Garden Suites</h3>
+                            <p class="text-textBody leading-relaxed mb-6">Expand your living space or generate high-yield rental income right from your backyard. Our garden suites are beautifully designed standalone units that integrate seamlessly into your property.</p>
+                        </div>
+                    </div>
+
+                    <!-- Laneway Suite -->
+                    <div class="bg-surface-gray rounded-3xl overflow-hidden shadow-soft border border-surface-border group hover:-translate-y-2 transition-transform duration-300">
+                        <div class="h-64 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Laneway Suite" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                            <div class="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full text-sm font-bold text-deepBlue shadow-sm">Laneway Suite</div>
+                        </div>
+                        <div class="p-8">
+                            <h3 class="text-2xl font-bold text-deepBlue mb-4">Laneway Conversions</h3>
+                            <p class="text-textBody leading-relaxed mb-6">Are you a homeowner with a backyard garage that has access to a laneway? It's time to unlock the full potential of your property by converting it into a modern, high-value laneway suite!</p>
+                        </div>
+                    </div>
+
+                    <!-- Multiplex -->
+                    <div class="bg-surface-gray rounded-3xl overflow-hidden shadow-soft border border-surface-border group hover:-translate-y-2 transition-transform duration-300">
+                        <div class="h-64 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Multiplex Property" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                            <div class="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full text-sm font-bold text-deepBlue shadow-sm">Multiplex</div>
+                        </div>
+                        <div class="p-8">
+                            <h3 class="text-2xl font-bold text-deepBlue mb-4">Multiplex Conversions</h3>
+                            <p class="text-textBody leading-relaxed mb-6">If you own a house over 50 years old in Toronto, now is the perfect time to consider converting it into a multiplex. Designed for families and investors, it offers modern comfort, enhanced privacy, and long-term value in a sustainable urban setting.</p>
+                        </div>
+                    </div>
+
+                    <!-- Modular Home -->
+                    <div class="bg-deepBlue rounded-3xl overflow-hidden shadow-2xl border-4 border-accent group hover:-translate-y-2 transition-transform duration-300">
+                        <div class="h-64 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Modular SIP Home" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                            <div class="absolute top-4 left-4 bg-accent px-4 py-1.5 rounded-full text-sm font-bold text-white shadow-sm">Next-Gen Modular</div>
+                        </div>
+                        <div class="p-8">
+                            <h3 class="text-2xl font-bold text-white mb-4">Advanced Modular Homes</h3>
+                            <p class="text-white/80 leading-relaxed mb-6">We proudly announce our ICC-ES certified next-generation modular aluminum SIP homes in Canada—reducing building costs by up to one-third and redefining modern construction.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- NEW SECTION: Financial Benefits & Rebates (Condensed Showcase) -->
+        <section class="py-20 bg-white border-b border-surface-border">
+            <div class="container mx-auto px-6">
+                <div class="max-w-5xl mx-auto bg-surface-gray rounded-3xl p-8 md:p-12 shadow-soft border border-surface-border flex flex-col md:flex-row items-center gap-10">
+                    <div class="bg-accent-light p-6 rounded-full shrink-0 shadow-inner">
+                        <i data-lucide="landmark" class="w-16 h-16 text-accent"></i>
+                    </div>
+                    <div class="flex-grow text-center md:text-left">
+                        <span class="text-accent font-bold tracking-widest uppercase text-sm mb-2 block">Financial Benefits</span>
+                        <h3 class="text-2xl md:text-4xl font-bold text-deepBlue mb-4">Build and Save with Tax Rebates</h3>
+                        <p class="text-textBody text-lg leading-relaxed mb-8">
+                            Building a garden suite or multiplex? You may qualify for significant tax benefits that can save you thousands. Key incentives in Ontario include the <strong>HST New Residential Rental Property Rebate</strong> (up to 100% of the HST paid for rentals) and the <strong>Multigenerational Home Renovation Tax Credit</strong>. 
+                        </p>
+                        <div class="flex flex-col sm:flex-row items-center md:justify-start justify-center gap-6">
+                            <a href="https://www.canada.ca/en/revenue-agency/services/forms-publications/publications/rc4028/gst-hst-new-housing-rebate.html" target="_blank" rel="noopener noreferrer" class="pill-button inline-flex items-center space-x-2 bg-deepBlue hover:bg-deepBlue/90 text-white px-8 py-4 rounded-full font-bold text-sm shadow-lg border border-deepBlue shrink-0">
+                                <span>Official CRA Guidelines</span>
+                                <i data-lucide="external-link" class="w-4 h-4"></i>
+                            </a>
+                            <p class="text-xs text-textBody/70 italic text-left max-w-[250px]">
+                                *Disclaimer: Tax laws are complex and subject to change. Always consult with a qualified tax professional regarding your specific situation.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Our Offerings Matrix -->
+        <section class="py-24 bg-surface-gray">
+            <div class="container mx-auto px-6">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <span class="text-accent font-bold tracking-widest uppercase text-sm mb-2 block">Comprehensive Solutions</span>
+                    <h2 class="text-3xl md:text-5xl font-bold text-deepBlue">Our Offerings</h2>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-6 lg:gap-10">
+                    <!-- Offering 1 -->
+                    <div class="bg-white p-8 rounded-2xl shadow-soft text-center border border-surface-border">
+                        <div class="bg-accent-light w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-6">
+                            <i data-lucide="home" class="w-8 h-8 text-accent"></i>
+                        </div>
+                        <h4 class="font-bold text-deepBlue text-lg">ADUs Development</h4>
+                    </div>
+                    <!-- Offering 2 -->
+                    <div class="bg-white p-8 rounded-2xl shadow-soft text-center border border-surface-border">
+                        <div class="bg-accent-light w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-6">
+                            <i data-lucide="pen-tool" class="w-8 h-8 text-accent"></i>
+                        </div>
+                        <h4 class="font-bold text-deepBlue text-lg">Architectural Design</h4>
+                    </div>
+                    <!-- Offering 3 -->
+                    <div class="bg-white p-8 rounded-2xl shadow-soft text-center border border-surface-border">
+                        <div class="bg-accent-light w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-6">
+                            <i data-lucide="building" class="w-8 h-8 text-accent"></i>
+                        </div>
+                        <h4 class="font-bold text-deepBlue text-lg">Commercial Renovation</h4>
+                    </div>
+                    <!-- Offering 4 -->
+                    <div class="bg-white p-8 rounded-2xl shadow-soft text-center border border-surface-border">
+                        <div class="bg-accent-light w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-6">
+                            <i data-lucide="scissors" class="w-8 h-8 text-accent"></i>
+                        </div>
+                        <h4 class="font-bold text-deepBlue text-lg">Land Severance</h4>
+                    </div>
+                    <!-- Offering 5 -->
+                    <div class="bg-white p-8 rounded-2xl shadow-soft text-center border border-surface-border">
+                        <div class="bg-accent-light w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-6">
+                            <i data-lucide="file-check" class="w-8 h-8 text-accent"></i>
+                        </div>
+                        <h4 class="font-bold text-deepBlue text-lg">Permitting & Compliance</h4>
+                    </div>
+                    <!-- Offering 6 -->
+                    <div class="bg-white p-8 rounded-2xl shadow-soft text-center border border-surface-border">
+                        <div class="bg-accent-light w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-6">
+                            <i data-lucide="shield-check" class="w-8 h-8 text-accent"></i>
+                        </div>
+                        <h4 class="font-bold text-deepBlue text-lg">Quality Assurance</h4>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Exploring Our Work (Projects Portfolio) -->
+        <section class="py-24 bg-white border-t border-surface-border">
+            <div class="container mx-auto px-6">
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+                    <div class="max-w-2xl">
+                        <h2 class="text-3xl md:text-5xl font-bold text-deepBlue mb-4">Exploring Our Work</h2>
+                        <p class="text-lg text-textBody">Explore our portfolio to experience the perfect blend of artistry and functionality in every project. Each creation reflects our dedication to excellence and passion for crafting exceptional living spaces.</p>
+                    </div>
+                    <div class="mt-6 md:mt-0 shrink-0">
+                        <button class="pill-button px-6 py-3 border-2 border-deepBlue text-deepBlue font-bold rounded-full hover:bg-deepBlue hover:text-white">View All Projects</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="h-80 rounded-2xl overflow-hidden shadow-md">
+                        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Project 1" class="w-full h-full object-cover hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div class="h-80 rounded-2xl overflow-hidden shadow-md">
+                        <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Project 2" class="w-full h-full object-cover hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div class="h-80 rounded-2xl overflow-hidden shadow-md">
+                        <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Project 3" class="w-full h-full object-cover hover:scale-110 transition-transform duration-700">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Construction Testimonials -->
+        <section class="py-24 bg-deepBlue text-white border-t border-deepBlue relative overflow-hidden">
+            <!-- Decorative accent shape -->
+            <div class="absolute top-0 right-0 w-96 h-96 bg-accent rounded-full blur-3xl opacity-20 -translate-y-1/2 translate-x-1/2"></div>
+            
+            <div class="container mx-auto px-6 relative z-10">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <span class="text-accent font-bold tracking-widest uppercase text-sm mb-2 block">Our Clients</span>
+                    <h2 class="text-3xl md:text-5xl font-bold mb-6">Building Long-Term Relationships</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Client 1 -->
+                    <div class="bg-white/5 border border-white/10 p-8 rounded-2xl backdrop-blur-sm">
+                        <div class="flex text-accent mb-4"><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i></div>
+                        <p class="text-white/80 text-sm leading-relaxed mb-6 italic">"Charter Residential handled our garden suite project from start to finish. Their team navigated the tricky permit process effortlessly and delivered a beautiful, net-zero unit that generates fantastic rental income."</p>
+                        <div class="border-t border-white/20 pt-4">
+                            <p class="font-bold text-white">David & Emily S.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Client 2 -->
+                    <div class="bg-white/5 border border-white/10 p-8 rounded-2xl backdrop-blur-sm">
+                        <div class="flex text-accent mb-4"><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i></div>
+                        <p class="text-white/80 text-sm leading-relaxed mb-6 italic">"Building a laneway suite in our small backyard seemed impossible, but Charter's modular system made it seamless. The construction was fast, minimally disruptive, and the final quality is outstanding."</p>
+                        <div class="border-t border-white/20 pt-4">
+                            <p class="font-bold text-white">Marcus T.</p>
+                        </div>
+                    </div>
+
+                    <!-- Client 3 -->
+                    <div class="bg-white/5 border border-white/10 p-8 rounded-2xl backdrop-blur-sm">
+                        <div class="flex text-accent mb-4"><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i></div>
+                        <p class="text-white/80 text-sm leading-relaxed mb-6 italic">"We thought the city would only approve a tiny footprint for our lot. Charter Residential fought for our vision and optimized the design to get us a much larger modular suite than we expected. Their expertise is unmatched."</p>
+                        <div class="border-t border-white/20 pt-4">
+                            <p class="font-bold text-white">Jessica & Tom H.</p>
+                        </div>
+                    </div>
+
+                    <!-- Client 4 -->
+                    <div class="bg-white/5 border border-white/10 p-8 rounded-2xl backdrop-blur-sm">
+                        <div class="flex text-accent mb-4"><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i></div>
+                        <p class="text-white/80 text-sm leading-relaxed mb-6 italic">"We converted our aging bungalow into a high-yield multiplex using Charter's modular solutions. They maximized the property's potential while keeping the process incredibly transparent and stress-free."</p>
+                        <div class="border-t border-white/20 pt-4">
+                            <p class="font-bold text-white">Robert K.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div> <!-- End Modular Living View -->
+
+    <!-- ==========================================
+         SHARED CTA SECTION
+         ========================================== -->
+    <section class="py-24 bg-white" x-show="currentView !== 'home'" x-cloak>
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-3xl md:text-5xl font-bold text-deepBlue mb-6 leading-tight">Get Your Free Property Income Assessment in 3 Easy Steps</h2>
+                <p class="text-xl text-textBody mb-16">Find out exactly how much more your property could be earning.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-16 relative">
+                    <!-- Desktop Connecting Line -->
+                    <div class="hidden md:block absolute top-7 left-[15%] right-[15%] h-px bg-surface-border z-0"></div>
+
+                    <!-- Step 1 -->
+                    <div class="relative z-10 flex flex-col items-center bg-white">
+                        <div class="step-circle mb-6">1</div>
+                        <h3 class="text-xl font-bold text-deepBlue mb-3">Send</h3>
+                        <p class="text-textBody text-center">Send a short walkthrough video, property location, and your current rent details.</p>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="relative z-10 flex flex-col items-center bg-white">
+                        <div class="step-circle mb-6">2</div>
+                        <h3 class="text-xl font-bold text-deepBlue mb-3">Analyze</h3>
+                        <p class="text-textBody text-center">Charter expert team reviews your layout potential and runs local market data.</p>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="relative z-10 flex flex-col items-center bg-white">
+                        <div class="step-circle mb-6">3</div>
+                        <h3 class="text-xl font-bold text-deepBlue mb-3">Receive</h3>
+                        <p class="text-textBody text-center">Get a custom Room Potential Estimate and our Base + Premium proposal.</p>
+                    </div>
+                </div>
+
+                <a href="#" class="pill-button inline-flex items-center space-x-3 bg-accent hover:bg-accent-hover text-white px-10 py-5 rounded-full font-bold text-xl shadow-hover border border-accent">
+                    <span>Start My Free Assessment</span>
+                    <span class="text-sm font-normal opacity-80">- No Obligation</span>
+                    <i data-lucide="arrow-right" class="w-6 h-6"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. Footer -->
+    <footer class="bg-deepBlue text-white pt-20 pb-10 border-t-4 border-accent">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+                <!-- Brand -->
+                <div>
+                    <div class="flex items-center space-x-2 mb-6">
+                        <div class="bg-white p-2 rounded-lg">
+                            <i data-lucide="home" class="text-deepBlue w-6 h-6"></i>
+                        </div>
+                        <span class="text-lg font-bold">CHARTER RESIDENTIAL</span>
+                    </div>
+                    <p class="text-white/70 mb-8 font-light text-sm">Performance-based property management and net-zero modular housing in the Greater Toronto Area.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="bg-white/10 p-2 rounded-full hover:bg-accent transition-colors"><i data-lucide="facebook" class="w-5 h-5"></i></a>
+                        <a href="#" class="bg-white/10 p-2 rounded-full hover:bg-accent transition-colors"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+                        <a href="#" class="bg-white/10 p-2 rounded-full hover:bg-accent transition-colors"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="font-bold text-lg mb-6">Navigation</h4>
+                    <ul class="space-y-3 text-white/70 text-sm">
+                        <li><a href="#" class="hover:text-white hover:underline transition-all">Home</a></li>
+                        <li><a href="#" @click.prevent="currentView = 'property-management'; window.scrollTo(0,0);" class="hover:text-white hover:underline transition-all">Property Management</a></li>
+                        <li><a href="#" @click.prevent="currentView = 'modular-living'; window.scrollTo(0,0);" class="hover:text-white hover:underline transition-all">Modular Living</a></li>
+                        <li><a href="#" class="hover:text-white hover:underline transition-all">Contact Us</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Info -->
+                <div>
+                    <h4 class="font-bold text-lg mb-6">Contact</h4>
+                    <ul class="space-y-4 text-white/70 text-sm">
+                        <li class="flex items-start space-x-3">
+                            <i data-lucide="map-pin" class="w-5 h-5 mt-0.5 text-accent"></i>
+                            <span>Toronto, Ontario<br>Greater Toronto Area</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i data-lucide="phone" class="w-5 h-5 text-accent"></i>
+                            <span>+1 437-974-2863</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i data-lucide="mail" class="w-5 h-5 text-accent"></i>
+                            <span>hello@charterresidential.com</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter -->
+                <div>
+                    <h4 class="font-bold text-lg mb-6">Stay Updated</h4>
+                    <form class="space-y-3">
+                        <input type="email" placeholder="Your email address" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-sm focus:outline-none focus:border-accent focus:bg-white/10 transition-colors text-white placeholder-white/40">
+                        <button class="w-full bg-accent text-white font-bold py-3 rounded-lg hover:bg-accent-hover transition-colors tracking-wide text-sm">Get Market Updates</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between text-white/40 text-xs space-y-4 md:space-y-0">
+                <p>&copy; 2024 Charter Residential. All rights reserved.</p>
+                <div class="flex space-x-8">
+                    <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>
