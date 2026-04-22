@@ -47,14 +47,18 @@ Because the project is static, no package manager, bundler, or backend server is
 
 ```text
 .
+├── assets
+│   ├── docs
+│   │   ├── garden-suites-presentation.pdf
+│   │   └── modular-housing-framework.pdf
+│   ├── images
+│   │   ├── garden-suite-exterior.png
+│   │   ├── laneway-suite-concept.png
+│   │   └── modular-sip-home.png
+│   └── videos
+│       └── modular-living-hero.mp4
 ├── index.html
-├── README.md
-├── 123.png
-├── 1234.png
-├── ChatGPT Image Apr 17, 2026, 03_49_41 AM.png
-├── Flow_202604170311.mp4
-├── BackyardSlides.pdf
-└── Garden Housing 2026 2.pdf (2).pdf
+└── README.md
 ```
 
 ## Local Preview
@@ -89,10 +93,10 @@ For GitHub Pages, publish the `main` branch from the repository root because `in
 
 ## Asset Notes
 
-- `Flow_202604170311.mp4` powers the Modular Living hero background video.
-- `123.png`, `1234.png`, and `ChatGPT Image Apr 17, 2026, 03_49_41 AM.png` are used in the modular product cards.
-- `BackyardSlides.pdf` is embedded in the Garden Suites section.
-- `Garden Housing 2026 2.pdf (2).pdf` is embedded in the Modular Framework section.
+- `assets/videos/modular-living-hero.mp4` powers the Modular Living hero background video.
+- `assets/images/garden-suite-exterior.png`, `assets/images/laneway-suite-concept.png`, and `assets/images/modular-sip-home.png` are used in the modular product cards.
+- `assets/docs/garden-suites-presentation.pdf` is embedded in the Garden Suites section.
+- `assets/docs/modular-housing-framework.pdf` is embedded in the Modular Framework section.
 - The Property Management deck is embedded from Google Drive.
 
 ## Contact Information Displayed
